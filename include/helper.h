@@ -10,3 +10,6 @@ public:
   static int generate(int start, int end);
   static int weightedGenerate(const std::vector<uint8_t> &weights);
 };
+
+const char decimalToHex(int decimal);
+const int hexToDecimal(char hex);

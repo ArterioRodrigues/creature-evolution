@@ -37,11 +37,8 @@ add_executable(main
   src/game.cpp
   src/main.cpp
   src/creature.cpp
-  src/helper.cpp
   src/world.cpp
-  #src/ant.cpp
-  #src/colony.cpp
-  #src/text.cpp
+  src/helper.cpp
 )
 target_include_directories(main PRIVATE 
     ${CMAKE_SOURCE_DIR}/include

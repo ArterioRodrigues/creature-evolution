@@ -3,8 +3,7 @@
 #include "helper.h"
 #include <cstdint>
 
-Creature::Creature() {
-
+Creature::Creature(int genomeLenght): _genome(genomeLenght), _brain(_genome) {
   uint8_t red = randomNumberGenerator(0, 255);
   uint8_t green = randomNumberGenerator(0, 255);
   uint8_t blue = randomNumberGenerator(0, 255);

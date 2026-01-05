@@ -1,15 +1,9 @@
 #pragma once
 #include "pch.h"
-#include "resourceManager.h"
 #include "world.h"
 
 class Configuration {
 public:
-  enum Textures : int {
-    Player,
-  };
-  static ResourceManager<sf::Texture, int> textures;
-
   static unsigned int windowX;
   static unsigned int windowY;
 

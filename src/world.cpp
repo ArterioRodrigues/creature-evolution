@@ -4,7 +4,7 @@
 
 World::World() {
   for (int i = 0; i < Configuration::population; i++) {
-    Creature *creature = new Creature();
+    Creature *creature = new Creature(8);
     creatures.push_back(*creature);
   }
 }

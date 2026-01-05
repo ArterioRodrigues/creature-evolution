@@ -5,6 +5,7 @@
 #include <optional>
 #include <thread>
 #include <unordered_map>
+#include <cstddef>
 
 #include <chrono>
 #include <functional>

@@ -1,6 +1,5 @@
 #include "configuration.h"
 
-ResourceManager<sf::Texture, int> Configuration::textures;
 unsigned int Configuration::windowX = 0;
 unsigned int Configuration::windowY = 0;
 
@@ -12,17 +11,17 @@ unsigned int Configuration::genomeLength = 0;
 float Configuration::mutation = 0;
 double Configuration::frameRate = 0;
 
-World* Configuration::world = nullptr;
+World *Configuration::world = nullptr;
 Configuration::Configuration() {
   windowX = 1000;
   windowY = 800;
   frameRate = 30;
   mutation = 0.01;
 
-  population = 1000;
+  population = 1;
   steps = 300;
   genomeLength = 4;
   neurons = 1;
-  
+
   world = new World();
 }
