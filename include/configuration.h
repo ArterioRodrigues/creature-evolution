@@ -12,6 +12,9 @@ public:
   static unsigned int population;
   static unsigned int genomeLength;
 
+  static int gridWidth;
+  static int gridHeight;
+
   static float mutation;
 
   static double frameRate;

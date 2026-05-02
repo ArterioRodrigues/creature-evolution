@@ -4,9 +4,6 @@
 
 
 int main() {
-  //Genome creature1(8);
-  //creature1.displayGenomeBinary();
-  
    Configuration configuration;
    Game game;
    game.run();

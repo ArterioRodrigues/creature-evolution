@@ -1,4 +1,5 @@
 #pragma once
+#include "compass.h"
 #include "genome.h"
 #include "neuralNetwork.h"
 #include "pch.h"
@@ -7,12 +8,21 @@ class Creature : public sf::Drawable {
 public:
   Creature(int genomeLenght);
 
-private:
-  void draw(sf::RenderTarget &target,
-            sf::RenderStates states = sf::RenderStates::Default) const override;
+  int getX() const;
+  int getY() const;
 
+  void setLocation(int x, int y);
+
+  Compass getLastMoveDir() const;
+  void setLastMoveDir(Compass d);
+
+private:
+  void draw(sf::RenderTarget &target, sf::RenderStates states = sf::RenderStates::Default) const override;
+
+  int _x;
+  int _y;
   sf::CircleShape _circle;
-  sf::Vector2f _position;
   Genome _genome;
-  NeuralNetowrk _brain;
+  NeuralNetwork _brain;
+  Compass _lastMoveDir;
 };

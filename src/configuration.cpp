@@ -8,6 +8,9 @@ unsigned int Configuration::neurons = 0;
 unsigned int Configuration::population = 0;
 unsigned int Configuration::genomeLength = 0;
 
+int Configuration::gridWidth = 0;
+int Configuration::gridHeight = 0;
+
 float Configuration::mutation = 0;
 double Configuration::frameRate = 0;
 
@@ -15,13 +18,17 @@ World *Configuration::world = nullptr;
 Configuration::Configuration() {
   windowX = 1000;
   windowY = 800;
+
   frameRate = 30;
   mutation = 0.01;
 
-  population = 1;
   steps = 300;
-  genomeLength = 4;
   neurons = 1;
+  population = 500;
+  genomeLength = 4;
+
+  gridWidth = 128;
+  gridHeight = 128;
 
   world = new World();
 }

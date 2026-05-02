@@ -2,9 +2,7 @@
 #include "configuration.h"
 #include "creature.h"
 
-Game::Game()
-    : _window(sf::VideoMode({Configuration::windowX, Configuration::windowY}),
-              "Evolution Simultaion") {
+Game::Game() : _window(sf::VideoMode({Configuration::windowX, Configuration::windowY}), "Evolution Simultaion") {
   _x = Configuration::windowX;
   _y = Configuration::windowY;
 }
@@ -48,7 +46,7 @@ void Game::processEvents() {
 void Game::update(sf::Time deltaTime) {}
 
 void Game::render() {
-  _window.clear();
+  _window.clear(sf::Color::White);
   for (Creature creature : Configuration::world->getCreatures()) {
     _window.draw(creature);
   }

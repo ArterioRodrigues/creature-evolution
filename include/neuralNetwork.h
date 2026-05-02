@@ -1,30 +1,21 @@
+#pragma once
+#include "genome.h"
 #include "neuron.h"
+#include "pch.h"
 
 struct NeuronConnection {
-  Neuron *from;
-  Neuron *to;
+  Neuron::Type sourceType;
+  int sourceId;
+  Neuron::Type sinkType;
+  int sinkId;
   float weight;
 };
 
-class NeuralNetowrk {
+class NeuralNetwork {
 public:
-  NeuralNetowrk(Genome genome, int internalNeuronCount = 3) {
-    for (auto gen : genome.getGens()) {
-      NeuronConnection *connection = new NeuronConnection;
+  NeuralNetwork(Genome genome, int internalNeuronCount = 3);
 
-      Neuron::Type sourceType = Neuron::Type(int(gen.sourceType - '0'));
-      Neuron::Type sinkType = Neuron::Type(int(gen.sinkType - '0') + 1);
-
-      int sourceId = std::stoi(gen.sourceId, nullptr, 2);
-      int sinkId = std::stoi(gen.sinkId, nullptr, 2);
-      connection->from = new Neuron(sourceType, sourceId, internalNeuronCount);
-      connection->to = new Neuron(sinkType, sinkId, internalNeuronCount);
-      connection->weight = float(stoi(gen.weight, nullptr, 2)) / 8000 - 4;
-
-      _connections.push_back(*connection);
-    }
-  }
-  
+  const std::vector<NeuronConnection> &getConnections() const;
 
 private:
   std::vector<NeuronConnection> _connections;

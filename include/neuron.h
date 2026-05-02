@@ -2,7 +2,7 @@
 #include "genome.h"
 #include "pch.h"
 
-#define SENSORY_TYPE_SIZE 20
+#define SENSORY_TYPE_SIZE 21
 #define ACTION_TYPE_SIZE 11
 
 class Neuron {
@@ -69,7 +69,7 @@ public:
       os << "SENSORY";
       break;
     case (Neuron::Type::INTERNAL):
-      os << "INTERNAL " << neuron.getInternalId() ;
+      os << "INTERNAL " << neuron.getInternalId();
       break;
     case (Neuron::Type::ACTION):
       os << "ACTION";
@@ -81,7 +81,6 @@ public:
       os << "Sfd";
       break;
     case (Neuron::Type::Sg):
-      os << " Sg";
       break;
     case (Neuron::Type::Age):
       os << "Age";

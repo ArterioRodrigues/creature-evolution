@@ -19,6 +19,13 @@ int ThreadSafeRandom::generate(int start, int end) {
   return dist(gen);
 }
 
+int ThreadSafeRandom::generate(float start, float end) {
+  thread_local std::random_device rd;
+  thread_local std::mt19937 gen(rd());
+  std::uniform_int_distribution<int> dist(start, end);
+  return dist(gen);
+}
+
 int ThreadSafeRandom::weightedGenerate(const std::vector<uint8_t> &weights) {
   thread_local std::random_device rd;
   thread_local std::mt19937 gen(rd());
@@ -49,7 +56,7 @@ const char decimalToHex(int decimal) {
 }
 const int hexToDecimal(char hex) {
   if (hex <= '9')
-    return int(hex);
+    return int(hex - '0');
 
   switch (hex) {
   case 'a':
