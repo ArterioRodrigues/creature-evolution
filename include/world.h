@@ -6,7 +6,7 @@
 class World {
 public:
   World();
-  const std::vector<Creature> &getCreatures();
+  std::vector<Creature> &getCreatures();
 
   Grid& getGrid();
 

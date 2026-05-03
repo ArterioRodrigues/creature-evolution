@@ -1,6 +1,7 @@
 #pragma once
 #include "configuration.h"
 #include "pch.h"
+#include "simulation.h"
 
 class Game {
 public:
@@ -15,4 +16,5 @@ private:
   sf::RenderWindow _window;
   int _x;
   int _y;
+  Simulation _simulation;
 };

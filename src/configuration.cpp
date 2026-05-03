@@ -14,7 +14,6 @@ int Configuration::gridHeight = 0;
 float Configuration::mutation = 0;
 double Configuration::frameRate = 0;
 
-World *Configuration::world = nullptr;
 Configuration::Configuration() {
   windowX = 1000;
   windowY = 800;
@@ -29,6 +28,4 @@ Configuration::Configuration() {
 
   gridWidth = 128;
   gridHeight = 128;
-
-  world = new World();
 }

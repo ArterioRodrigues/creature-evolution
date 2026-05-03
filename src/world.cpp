@@ -20,8 +20,7 @@ World::World() : _grid(Configuration::gridWidth, Configuration::gridHeight) {
     creatures.push_back(creature);
   }
 }
-const std::vector<Creature> &World::getCreatures() { return creatures; }
 
-Grid& World::getGrid() {
-  return _grid;
-}
+std::vector<Creature> &World::getCreatures() { return creatures; }
+
+Grid &World::getGrid() { return _grid; }

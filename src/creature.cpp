@@ -1,4 +1,5 @@
 #include "creature.h"
+#include "actions.h"
 #include "configuration.h"
 #include "helper.h"
 
@@ -14,6 +15,7 @@ Creature::Creature(int genomeLenght) : _genome(genomeLenght), _brain(_genome) {
   _circle.setFillColor({red, green, blue});
 
   _lastMoveDir = Compass(randomNumberGenerator(0, 7));
+  _alive = true;
 }
 
 void Creature::draw(sf::RenderTarget &target, sf::RenderStates states) const {
@@ -34,3 +36,9 @@ int Creature::getX() const { return _x; }
 int Creature::getY() const { return _y; }
 Compass Creature::getLastMoveDir() const { return _lastMoveDir; }
 void Creature::setLastMoveDir(Compass d) { _lastMoveDir = d; }
+void Creature::stepOnce(World &world, int currentStep) {
+  if (!_alive) return;
+
+  auto actionLevels = _brain.feedForward(*this, world, currentStep);
+  executeActions(*this, world, actionLevels, currentStep);
+}

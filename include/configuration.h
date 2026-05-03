@@ -18,6 +18,6 @@ public:
   static float mutation;
 
   static double frameRate;
-  static World* world;
+
   Configuration();
 };

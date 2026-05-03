@@ -1,4 +1,5 @@
 #include "game.h"
+#include "simulation.h"
 #include "configuration.h"
 #include "creature.h"
 
@@ -43,11 +44,15 @@ void Game::processEvents() {
   }
 }
 
-void Game::update(sf::Time deltaTime) {}
+void Game::update(sf::Time deltaTime) {
+  _simulation.runOneStep();
+
+  if (_simulation.getCurrentStep() >= Configuration::steps) _simulation.endOfGeneration();
+}
 
 void Game::render() {
   _window.clear(sf::Color::White);
-  for (Creature creature : Configuration::world->getCreatures()) {
+  for (Creature creature : _simulation.getWorld().getCreatures()) {
     _window.draw(creature);
   }
   _window.display();

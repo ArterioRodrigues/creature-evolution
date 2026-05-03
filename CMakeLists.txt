@@ -41,6 +41,8 @@ add_executable(main
   src/sensors.cpp
   src/compass.cpp
   src/world.cpp
+  src/neuralNetwork.cpp
+  src/simulation.cpp
   src/actions.cpp
   src/helper.cpp
 )
