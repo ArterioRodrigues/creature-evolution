@@ -9,6 +9,7 @@ void Simulation::runOneStep() {
     creature.stepOnce(_world, _currentStep);
   }
   _currentStep++;
+  _world.getSignal().decay();
 }
 
 void Simulation::runOneGeneration() {
@@ -16,9 +17,17 @@ void Simulation::runOneGeneration() {
 }
 
 void Simulation::endOfGeneration() {
-  _world.repopulate();
+  int survivorCount = _world.repopulate();
   _currentGeneration++;
   _currentStep = 0;
+
+  while (survivorCount == -1) {
+    std::cout << "END OF SIMULATION" << std::endl;
+  }
+
+  static std::ofstream log("media/logs/epoch.txt", std::ios::app);
+  log << _currentGeneration << "," << Configuration::population << "," << survivorCount << ","
+      << float(float(survivorCount) / Configuration::population) << std::endl;
 }
 
 int Simulation::getCurrentGeneration() const { return _currentGeneration; }

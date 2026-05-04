@@ -32,6 +32,8 @@ void executeActions(Creature &self, World &world, const std::unordered_map<Neuro
       dx += level * rdx;
       dy += level * rdy;
     }
+    if(actionType == Neuron::Type::SG) 
+        world.getSignal().emit(self.getX(), self.getY(), randomNumberGenerator(1, 3), randomNumberGenerator(0, 255));
   }
 
   float probX = std::tanh(std::abs(dx));

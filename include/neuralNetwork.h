@@ -1,4 +1,5 @@
 #pragma once
+#include "configuration.h"
 #include "genome.h"
 #include "neuron.h"
 #include "pch.h"
@@ -16,7 +17,7 @@ struct NeuronConnection {
 
 class NeuralNetwork {
 public:
-  NeuralNetwork(Genome genome, int internalNeuronCount = 3);
+  NeuralNetwork(Genome genome, int internalNeuronCount = Configuration::neurons);
 
   const std::vector<NeuronConnection> &getConnections() const;
   std::unordered_map<Neuron::Type, float> feedForward(const Creature &self, World &world, int currentStep);

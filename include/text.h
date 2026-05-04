@@ -4,6 +4,7 @@
 class Text: public sf::Drawable {
 public:
   Text(std::string content);
+  Text(std::string content, float x, float y);
   void draw(sf::RenderTarget &target,
             sf::RenderStates states = sf::RenderStates::Default) const override;
 private:

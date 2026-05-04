@@ -16,5 +16,6 @@ private:
   sf::RenderWindow _window;
   int _x;
   int _y;
+  bool _fastForward;
   Simulation _simulation;
 };

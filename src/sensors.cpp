@@ -3,18 +3,37 @@
 #include "configuration.h"
 #include "helper.h"
 
-static float handleSensorSlr(const Creature &self, const World world, int currentStep) { return 0.5f; }
-static float handleSensorSfd(const Creature &self, const World &world, int currentStep) { return 0.5f; }
-static float handleSensorSg(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 static float handleSensorOsc(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 static float handleSensorLPf(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 static float handleSensorLBf(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 static float handleSensorGen(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 static float handleSensorLPD(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 static float handleSensorKill(const Creature &self, const World &world, int currentStep) { return 0.5f; }
-static float handleSensorSG(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 static float handleSensorRes(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 
+static float handleSensorSlr(const Creature &self, World world, int currentStep) {
+  float result = 0;
+  for (int i = 0; i < 3; i++) {
+    result += world.getSignal().at(self.getX(), self.getY() + i);
+  }
+
+  for (int i = 0; i < 3; i++) {
+    result -= world.getSignal().at(self.getX(), self.getY() - i);
+  }
+  return result / 3;
+}
+
+static float handleSensorSfd(const Creature &self, World &world, int currentStep) {
+  float result = 0;
+  for (int i = 0; i < 3; i++) {
+    result += world.getSignal().at(self.getX(), self.getY() + i);
+  }
+  return result / 3;
+}
+
+static float handleSensorSg(const Creature &self, World &world, int currentStep) {
+  return world.getSignal().at(self.getX(), self.getY());
+}
 static float handleSensorPop(const Creature &self, World &world, int currentStep) {
   int count = 0;
   for (int i = std::max(0, self.getX() - 3); i < std::min(Configuration::gridWidth, self.getX() + 3); i++) {
@@ -180,9 +199,6 @@ float computeSensor(Neuron::Type sensorType, const Creature &self, World &world,
   case Neuron::Type::OSC:
     return handleSensorOSC(self, world, currentStep);
     break;
-  case Neuron::Type::SG:
-    return handleSensorSG(self, world, currentStep);
-    break;
   case Neuron::Type::Res:
     return handleSensorRes(self, world, currentStep);
     break;
@@ -195,6 +211,7 @@ float computeSensor(Neuron::Type sensorType, const Creature &self, World &world,
   case Neuron::Type::Mfd:
   case Neuron::Type::Mrn:
   case Neuron::Type::Mrv:
+  case Neuron::Type::SG:
     return 0.5f;
     break;
   }

@@ -39,6 +39,7 @@ add_executable(main
   src/simulation.cpp
   src/creature.cpp
   src/grid.cpp
+  src/signal.cpp
   src/sensors.cpp
   src/compass.cpp
   src/world.cpp

@@ -1,7 +1,7 @@
 #pragma once
 #include "world.h"
 
-class Simulation {
+class Simulation { 
 public:
   Simulation();
 

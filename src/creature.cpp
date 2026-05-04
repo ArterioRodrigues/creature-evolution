@@ -3,11 +3,11 @@
 #include "configuration.h"
 #include "helper.h"
 
-
 Creature::Creature(int genomeLenght) : _genome(genomeLenght), _brain(_genome) {
-  uint8_t red = randomNumberGenerator(0, 255);
-  uint8_t green = randomNumberGenerator(0, 255);
-  uint8_t blue = randomNumberGenerator(0, 255);
+  const std::string &hex = _genome.toString();
+  uint8_t red = (hexToDecimal(hex[0]) << 4) | hexToDecimal(hex[1]);
+  uint8_t green = (hexToDecimal(hex[2]) << 4) | hexToDecimal(hex[3]);
+  uint8_t blue = (hexToDecimal(hex[4]) << 4) | hexToDecimal(hex[5]);
 
   _x = 0;
   _y = 0;

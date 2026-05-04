@@ -4,7 +4,9 @@
 #include "helper.h"
 #include "selection.h"
 
-World::World() : _grid(Configuration::gridWidth, Configuration::gridHeight) {
+World::World()
+    : _grid(Configuration::gridWidth, Configuration::gridHeight),
+      _signal(Configuration::gridWidth, Configuration::gridHeight) {
   for (int i = 0; i < Configuration::population; i++) {
     int x = randomNumberGenerator(0, Configuration::gridWidth - 1);
     int y = randomNumberGenerator(0, Configuration::gridHeight - 1);
@@ -25,13 +27,14 @@ World::World() : _grid(Configuration::gridWidth, Configuration::gridHeight) {
 std::vector<Creature> &World::getCreatures() { return _creatures; }
 
 Grid &World::getGrid() { return _grid; }
+Signal &World::getSignal() { return _signal; }
+Selection &World::getSelection() { return _selection; }
 
-void World::repopulate() {
-
+int World::repopulate() {
   std::vector<Creature> aliveCreature;
 
   for (auto &creature : _creatures) {
-    bool alive = survives(creature, *this);
+    bool alive = _selection.survives(creature, *this);
 
     creature.setAlive(alive);
     if (!alive) continue;
@@ -40,11 +43,11 @@ void World::repopulate() {
   }
 
   _grid.clear();
+  _signal.clear();
   _creatures.clear();
 
   if (aliveCreature.size() == 0) {
-    std::cout << "END OF SIMULATION" << std::endl;
-    return;
+    return -1;
   };
 
   for (int i = 0; i < Configuration::population; i++) {
@@ -63,4 +66,7 @@ void World::repopulate() {
     creature.setLocation(x, y);
     _creatures.push_back(creature);
   }
+
+  return aliveCreature.size();
 }
+
