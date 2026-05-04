@@ -3,7 +3,6 @@
 #include "configuration.h"
 #include "helper.h"
 
-static float handleSensorOsc(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 static float handleSensorLPf(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 static float handleSensorLBf(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 static float handleSensorGen(const Creature &self, const World &world, int currentStep) { return 0.5f; }
@@ -11,42 +10,56 @@ static float handleSensorLPD(const Creature &self, const World &world, int curre
 static float handleSensorKill(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 static float handleSensorRes(const Creature &self, const World &world, int currentStep) { return 0.5f; }
 
-static float handleSensorSlr(const Creature &self, World world, int currentStep) {
-  float result = 0;
-  for (int i = 0; i < 3; i++) {
-    result += world.getSignal().at(self.getX(), self.getY() + i);
-  }
+static float handleSensorOsc(const Creature &self, const World &world, int currentStep) {
+  return (std::sin(2.0f * std::numbers::pi * currentStep / 34.0f) + 1.0f) / 2.0f;
+}
+static float handleSensorOSC(const Creature &self, World &world, int currentStep) { return 0.5f; }
 
-  for (int i = 0; i < 3; i++) {
-    result -= world.getSignal().at(self.getX(), self.getY() - i);
+static float handleSensorSlr(const Creature &self, World &world, int currentStep) {
+  Compass heading = self.getLastMoveDir();
+  auto [lx, ly] = compassToDelta(rotateLeft(heading));
+  auto [rx, ry] = compassToDelta(rotateRight(heading));
+
+  float result = 0.0f;
+  for (int i = 1; i <= 3; i++) {
+    result += world.getSignal().at(self.getX() + rx * i, self.getY() + ry * i);
+    result -= world.getSignal().at(self.getX() + lx * i, self.getY() + ly * i);
   }
-  return result / 3;
+  return (result / 3.0f) / 255.0f;
 }
 
+// Bug #11, #13: sample forward in actual heading direction, normalize to [0,1].
 static float handleSensorSfd(const Creature &self, World &world, int currentStep) {
-  float result = 0;
-  for (int i = 0; i < 3; i++) {
-    result += world.getSignal().at(self.getX(), self.getY() + i);
+  auto [dx, dy] = compassToDelta(self.getLastMoveDir());
+  float result = 0.0f;
+  for (int i = 1; i <= 3; i++) {
+    result += world.getSignal().at(self.getX() + dx * i, self.getY() + dy * i);
   }
-  return result / 3;
+  return (result / 3.0f) / 255.0f;
 }
 
 static float handleSensorSg(const Creature &self, World &world, int currentStep) {
-  return world.getSignal().at(self.getX(), self.getY());
+  return world.getSignal().at(self.getX(), self.getY()) / 255.0f;
 }
+
 static float handleSensorPop(const Creature &self, World &world, int currentStep) {
   int count = 0;
-  for (int i = std::max(0, self.getX() - 3); i < std::min(Configuration::gridWidth, self.getX() + 3); i++) {
-    for (int j = std::max(0, self.getY() - 3); j < std::min(Configuration::gridHeight, self.getY() + 3); j++)
+  for (int i = std::max(0, self.getX() - 3); i <= std::min(Configuration::gridWidth - 1, self.getX() + 3); i++) {
+    for (int j = std::max(0, self.getY() - 3); j <= std::min(Configuration::gridHeight - 1, self.getY() + 3); j++) {
+      if (i == self.getX() && j == self.getY()) continue;
       count += world.getGrid().isOccupiedAt(i, j) ? 1 : 0;
+    }
   }
   return float(count) / 48.0f;
 }
+
 static float handleSensorBD(const Creature &self, const World &world, int currentStep) {
-  return std::min<int>({self.getX(), self.getY(), Configuration::gridWidth - 1 - self.getX(),
-                        Configuration::gridHeight - 1 - self.getY()}) -
-         float(float(std::min<int>(Configuration::gridWidth, Configuration::gridHeight)) / 2);
+  int dist = std::min<int>({self.getX(), self.getY(), Configuration::gridWidth - 1 - self.getX(),
+                            Configuration::gridHeight - 1 - self.getY()});
+  float halfMin = std::min(Configuration::gridWidth, Configuration::gridHeight) / 2.0f;
+  return dist / halfMin;
 }
+
 static float handleSensorBDy(const Creature &self, World &world, int currentStep) {
   return std::min<int>({self.getY(), Configuration::gridHeight - 1 - self.getY()}) /
          float(float(Configuration::gridHeight - 1) / 2);
@@ -55,14 +68,17 @@ static float handleSensorBDx(const Creature &self, World &world, int currentStep
   return std::min<int>({self.getX(), Configuration::gridWidth - 1 - self.getX()}) /
          float(float(Configuration::gridWidth - 1) / 2);
 }
+
+// Bug #3: out-of-bounds OR occupied counts as blocked.
 static float handleSensorBfd(const Creature &self, World &world, int currentStep) {
   auto [first, second] = compassToDelta(self.getLastMoveDir());
   int x = self.getX() + first;
   int y = self.getY() + second;
 
-  if (world.getGrid().isOccupiedAt(x, y) || world.getGrid().isInBounds(x, y)) return 1.0f;
+  if (!world.getGrid().isInBounds(x, y) || world.getGrid().isOccupiedAt(x, y)) return 1.0f;
   return 0.0f;
 }
+
 static float handleSensorBlr(const Creature &self, World &world, int currentStep) {
   Compass heading = self.getLastMoveDir();
   auto [lx, ly] = compassToDelta(rotateLeft(heading));
@@ -110,8 +126,11 @@ static float handleSensorLMy(const Creature &self, const World &world, int curre
   auto [dx, dy] = compassToDelta(self.getLastMoveDir());
   return (dy + 1) / 2.0f;
 }
+
+// Bug #4: was randomNumberGenerator(0.0f, 0.0f) — always 0.
+// Depends on Bug #1 (float overload now actually returns a float).
 static float handleSensorRnd(const Creature &self, World &world, int currentStep) {
-  return randomNumberGenerator(0.0f, 0.0f);
+  return randomNumberGenerator(0.0f, 1.0f);
 }
 static float handleSensorAge(const Creature &self, World &world, int currentStep) {
   return currentStep / float(Configuration::steps);
@@ -122,9 +141,7 @@ static float handleSensorLx(const Creature &self, World &world, int currentStep)
 static float handleSensorLy(const Creature &self, World &world, int currentStep) {
   return self.getY() / float(Configuration::gridHeight - 1);
 }
-static float handleSensorOSC(const Creature &self, World &world, int currentStep) {
-  return (std::sin(2.0f * std::numbers::pi * currentStep / 34.0f) + 1.0f) / 2.0f;
-}
+
 float computeSensor(Neuron::Type sensorType, const Creature &self, World &world, int currentStep) {
   switch (sensorType) {
   case Neuron::Type::Slr:
@@ -215,4 +232,5 @@ float computeSensor(Neuron::Type sensorType, const Creature &self, World &world,
     return 0.5f;
     break;
   }
+  return 0.5f;
 }

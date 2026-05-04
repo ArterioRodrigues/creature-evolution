@@ -23,7 +23,7 @@ Configuration::Configuration() {
   frameRate = 30;
   mutation = 0.01;
 
-  steps = 500;
+  steps = 250;
   fastFowardCount = 1000;
 
   decayRate = 1;

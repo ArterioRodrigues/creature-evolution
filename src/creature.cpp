@@ -3,17 +3,21 @@
 #include "configuration.h"
 #include "helper.h"
 
-Creature::Creature(int genomeLenght) : _genome(genomeLenght), _brain(_genome) {
-  const std::string &hex = _genome.toString();
+namespace {
+sf::Color colorFromGenome(const std::string &hex) {
   uint8_t red = (hexToDecimal(hex[0]) << 4) | hexToDecimal(hex[1]);
   uint8_t green = (hexToDecimal(hex[2]) << 4) | hexToDecimal(hex[3]);
   uint8_t blue = (hexToDecimal(hex[4]) << 4) | hexToDecimal(hex[5]);
+  return sf::Color(red, green, blue);
+}
+} 
 
+Creature::Creature(int genomeLenght) : _genome(genomeLenght), _brain(_genome) {
   _x = 0;
   _y = 0;
 
   _circle.setRadius(2);
-  _circle.setFillColor({red, green, blue});
+  _circle.setFillColor(colorFromGenome(_genome.toString()));
 
   _lastMoveDir = Compass(randomNumberGenerator(0, 7));
   _alive = true;
@@ -21,15 +25,11 @@ Creature::Creature(int genomeLenght) : _genome(genomeLenght), _brain(_genome) {
 
 Creature::Creature(const std::string &parentGenome, float mutationRate)
     : _genome(parentGenome, mutationRate), _brain(_genome) {
-  uint8_t red = randomNumberGenerator(0, 255);
-  uint8_t green = randomNumberGenerator(0, 255);
-  uint8_t blue = randomNumberGenerator(0, 255);
-
   _x = 0;
   _y = 0;
 
   _circle.setRadius(2);
-  _circle.setFillColor({red, green, blue});
+  _circle.setFillColor(colorFromGenome(_genome.toString()));
 
   _lastMoveDir = Compass(randomNumberGenerator(0, 7));
   _alive = true;

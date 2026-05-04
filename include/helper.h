@@ -8,7 +8,7 @@ int weightedRandomGenerator(const std::vector<uint8_t> &weights);
 class ThreadSafeRandom {
 public:
   static int generate(int start, int end);
-  static int generate(float start, float end);
+  static float generate(float start, float end);
   static int weightedGenerate(const std::vector<uint8_t> &weights);
 };
 

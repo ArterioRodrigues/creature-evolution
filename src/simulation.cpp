@@ -1,6 +1,7 @@
 #include "simulation.h"
 #include "configuration.h"
 #include "selection.h"
+#include <cstdlib>
 
 Simulation::Simulation() : _currentGeneration(0), _currentStep(0), _world() {}
 
@@ -21,8 +22,9 @@ void Simulation::endOfGeneration() {
   _currentGeneration++;
   _currentStep = 0;
 
-  while (survivorCount == -1) {
+  if (survivorCount == -1) {
     std::cout << "END OF SIMULATION" << std::endl;
+    std::exit(0);
   }
 
   static std::ofstream log("media/logs/epoch.txt", std::ios::app);

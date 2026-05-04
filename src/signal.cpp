@@ -17,12 +17,21 @@ Signal::Signal(int width, int height) {
 void Signal::emit(int x, int y, int radius, uint8_t amount) {
   for (int i = std::max(0, x - radius); i < std::min(_width, x + radius); i++) {
     for (int j = std::max(0, y - radius); j < std::min(_height, y + radius); j++) {
-      _cells[i][j] = amount;
+      int sum = static_cast<int>(_cells[i][j]) + static_cast<int>(amount);
+      _cells[i][j] = static_cast<uint8_t>(std::min(255, sum));
     }
   }
 }
-int16_t Signal::at(int x, int y) const { return _cells[x][y]; }
-void Signal::set(int x, int y, uint8_t value) { _cells[x][y] = value; }
+
+int16_t Signal::at(int x, int y) const {
+  if (x < 0 || x >= _width || y < 0 || y >= _height) return 0;
+  return _cells[x][y];
+}
+
+void Signal::set(int x, int y, uint8_t value) {
+  if (x < 0 || x >= _width || y < 0 || y >= _height) return;
+  _cells[x][y] = value;
+}
 
 int Signal::getWidth() const { return _width; }
 int Signal::getHeight() const { return _height; }
