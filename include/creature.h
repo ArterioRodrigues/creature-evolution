@@ -20,6 +20,14 @@ public:
   void stepOnce(World &world, int currentStep);
   bool isAlive() const;
   void setAlive(bool a);
+  int getLongProbeDistance() const;
+  void setLongProbeDistance(int d);
+
+  float getOscillatorPeriod() const;
+  void setOscillatorPeriod(float p);
+
+  float getResponsiveness() const;
+  void setResponsiveness(float r);
 
 private:
   void draw(sf::RenderTarget &target, sf::RenderStates states = sf::RenderStates::Default) const override;
@@ -31,4 +39,7 @@ private:
   Genome _genome;
   NeuralNetwork _brain;
   Compass _lastMoveDir;
+  int _longProbeDistance;
+  float _oscillatorPeriod;
+  float _responsiveness;
 };

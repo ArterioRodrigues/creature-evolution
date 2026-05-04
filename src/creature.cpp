@@ -10,7 +10,7 @@ sf::Color colorFromGenome(const std::string &hex) {
   uint8_t blue = (hexToDecimal(hex[4]) << 4) | hexToDecimal(hex[5]);
   return sf::Color(red, green, blue);
 }
-} 
+} // namespace
 
 Creature::Creature(int genomeLenght) : _genome(genomeLenght), _brain(_genome) {
   _x = 0;
@@ -21,6 +21,10 @@ Creature::Creature(int genomeLenght) : _genome(genomeLenght), _brain(_genome) {
 
   _lastMoveDir = Compass(randomNumberGenerator(0, 7));
   _alive = true;
+
+  _longProbeDistance = 16;
+  _oscillatorPeriod = 34.0f;
+  _responsiveness = 1.0f;
 }
 
 Creature::Creature(const std::string &parentGenome, float mutationRate)
@@ -33,6 +37,10 @@ Creature::Creature(const std::string &parentGenome, float mutationRate)
 
   _lastMoveDir = Compass(randomNumberGenerator(0, 7));
   _alive = true;
+
+  _longProbeDistance = 16;
+  _oscillatorPeriod = 34.0f;
+  _responsiveness = 1.0f;
 }
 
 void Creature::draw(sf::RenderTarget &target, sf::RenderStates states) const {
@@ -65,3 +73,12 @@ void Creature::stepOnce(World &world, int currentStep) {
 
 bool Creature::isAlive() const { return _alive; }
 void Creature::setAlive(bool a) { _alive = a; }
+
+int Creature::getLongProbeDistance() const { return _longProbeDistance; }
+void Creature::setLongProbeDistance(int d) { _longProbeDistance = std::clamp(d, 1, 32); }
+
+float Creature::getOscillatorPeriod() const { return _oscillatorPeriod; }
+void Creature::setOscillatorPeriod(float p) { _oscillatorPeriod = std::clamp(p, 2.0f, 256.0f); }
+
+float Creature::getResponsiveness() const { return _responsiveness; }
+void Creature::setResponsiveness(float r) { _responsiveness = std::clamp(r, 0.0f, 1.0f); }

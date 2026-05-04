@@ -32,9 +32,50 @@ void executeActions(Creature &self, World &world, const std::unordered_map<Neuro
       dx += level * rdx;
       dy += level * rdy;
     }
-    if(actionType == Neuron::Type::SG) 
-        world.getSignal().emit(self.getX(), self.getY(), randomNumberGenerator(1, 3), randomNumberGenerator(0, 255));
+
+    if (actionType == Neuron::Type::SG)
+      world.getSignal().emit(self.getX(), self.getY(), randomNumberGenerator(1, 3),
+                             randomNumberGenerator(0, 255));
+
+    if (Configuration::enableKill && actionType == Neuron::Type::Kill && level > 0.5f) {
+      auto [kdx, kdy] = compassToDelta(self.getLastMoveDir());
+      int kx = self.getX() + kdx;
+      int ky = self.getY() + kdy;
+
+      if (world.getGrid().isInBounds(kx, ky) && world.getGrid().isOccupiedAt(kx, ky)) {
+        int neighborId = world.getGrid().at(kx, ky);
+        auto &creatures = world.getCreatures();
+        if (neighborId >= 1 && neighborId <= static_cast<int>(creatures.size())) {
+          Creature &victim = creatures[neighborId - 1];
+          if (victim.isAlive()) {
+            victim.setAlive(false);
+            world.getGrid().set(kx, ky, 0);
+          }
+        }
+      }
+    }
+
+    if (actionType == Neuron::Type::LPD) {
+      float t = (level + 1.0f) / 2.0f;
+      int dist = static_cast<int>(std::round(t * 31.0f + 1.0f));
+      self.setLongProbeDistance(dist);
+    }
+
+    if (actionType == Neuron::Type::OSC) {
+      float t = (level + 1.0f) / 2.0f;
+      float period = t * 60.0f + 2.0f;
+      self.setOscillatorPeriod(period);
+    }
+
+    if (actionType == Neuron::Type::Res) {
+      float r = (level + 1.0f) / 2.0f;
+      self.setResponsiveness(r);
+    }
   }
+
+  const float res = self.getResponsiveness();
+  dx *= res;
+  dy *= res;
 
   float probX = std::tanh(std::abs(dx));
   float probY = std::tanh(std::abs(dy));
@@ -59,5 +100,4 @@ void executeActions(Creature &self, World &world, const std::unordered_map<Neuro
 
   Compass newDir = deltaToCompass(stepX, stepY);
   self.setLastMoveDir(newDir);
-  return;
 }

@@ -2,18 +2,68 @@
 #include "compass.h"
 #include "configuration.h"
 #include "helper.h"
+#include <bit>
 
-static float handleSensorLPf(const Creature &self, const World &world, int currentStep) { return 0.5f; }
-static float handleSensorLBf(const Creature &self, const World &world, int currentStep) { return 0.5f; }
-static float handleSensorGen(const Creature &self, const World &world, int currentStep) { return 0.5f; }
-static float handleSensorLPD(const Creature &self, const World &world, int currentStep) { return 0.5f; }
-static float handleSensorKill(const Creature &self, const World &world, int currentStep) { return 0.5f; }
-static float handleSensorRes(const Creature &self, const World &world, int currentStep) { return 0.5f; }
+static float handleSensorLPf(const Creature &self, World &world, int currentStep) {
+  auto [dx, dy] = compassToDelta(self.getLastMoveDir());
+  if (dx == 0 && dy == 0) return 0.0f;
+
+  const int probeDist = self.getLongProbeDistance();
+  if (probeDist <= 0) return 0.0f;
+
+  int count = 0;
+  for (int i = 1; i <= probeDist; ++i) {
+    int x = self.getX() + dx * i;
+    int y = self.getY() + dy * i;
+    if (!world.getGrid().isInBounds(x, y)) break;
+    if (world.getGrid().isOccupiedAt(x, y)) ++count;
+  }
+  return count / float(probeDist);
+}
+
+static float handleSensorLBf(const Creature &self, World &world, int currentStep) {
+  auto [dx, dy] = compassToDelta(self.getLastMoveDir());
+  if (dx == 0 && dy == 0) return 0.0f;
+
+  const int probeDist = self.getLongProbeDistance();
+  if (probeDist <= 0) return 0.0f;
+
+  for (int i = 1; i <= probeDist; ++i) {
+    int x = self.getX() + dx * i;
+    int y = self.getY() + dy * i;
+    if (!world.getGrid().isInBounds(x, y) || world.getGrid().isOccupiedAt(x, y)) {
+      return 1.0f - float(i - 1) / float(probeDist);
+    }
+  }
+  return 0.0f;
+}
+
+static float handleSensorGen(const Creature &self, World &world, int currentStep) {
+  auto [dx, dy] = compassToDelta(self.getLastMoveDir());
+  int x = self.getX() + dx;
+  int y = self.getY() + dy;
+  if (!world.getGrid().isInBounds(x, y) || !world.getGrid().isOccupiedAt(x, y)) return 0.0f;
+
+  int neighborId = world.getGrid().at(x, y);
+  auto &creatures = world.getCreatures();
+  if (neighborId < 1 || neighborId > static_cast<int>(creatures.size())) return 0.0f;
+
+  std::string a = self.getGenome().toString();
+  std::string b = creatures[neighborId - 1].getGenome().toString();
+  if (a.empty() || a.length() != b.length()) return 0.0f;
+
+  int matchingBits = 0;
+  const int totalBits = static_cast<int>(a.length()) * 4;
+  for (size_t i = 0; i < a.length(); ++i) {
+    int diff = hexToDecimal(a[i]) ^ hexToDecimal(b[i]);
+    matchingBits += 4 - std::popcount(static_cast<unsigned int>(diff));
+  }
+  return float(matchingBits) / float(totalBits);
+}
 
 static float handleSensorOsc(const Creature &self, const World &world, int currentStep) {
-  return (std::sin(2.0f * std::numbers::pi * currentStep / 34.0f) + 1.0f) / 2.0f;
+  return (std::sin(2.0f * std::numbers::pi * currentStep / self.getOscillatorPeriod()) + 1.0f) / 2.0f;
 }
-static float handleSensorOSC(const Creature &self, World &world, int currentStep) { return 0.5f; }
 
 static float handleSensorSlr(const Creature &self, World &world, int currentStep) {
   Compass heading = self.getLastMoveDir();
@@ -28,7 +78,6 @@ static float handleSensorSlr(const Creature &self, World &world, int currentStep
   return (result / 3.0f) / 255.0f;
 }
 
-// Bug #11, #13: sample forward in actual heading direction, normalize to [0,1].
 static float handleSensorSfd(const Creature &self, World &world, int currentStep) {
   auto [dx, dy] = compassToDelta(self.getLastMoveDir());
   float result = 0.0f;
@@ -69,7 +118,6 @@ static float handleSensorBDx(const Creature &self, World &world, int currentStep
          float(float(Configuration::gridWidth - 1) / 2);
 }
 
-// Bug #3: out-of-bounds OR occupied counts as blocked.
 static float handleSensorBfd(const Creature &self, World &world, int currentStep) {
   auto [first, second] = compassToDelta(self.getLastMoveDir());
   int x = self.getX() + first;
@@ -92,6 +140,7 @@ static float handleSensorBlr(const Creature &self, World &world, int currentStep
 
   return (int(rightBlocked) - int(leftBlocked) + 1) / 2.0f;
 }
+
 static float handleSensorPfd(const Creature &self, World &world, int currentStep) {
   auto [dx, dy] = compassToDelta(self.getLastMoveDir());
   int count = 0;
@@ -102,6 +151,7 @@ static float handleSensorPfd(const Creature &self, World &world, int currentStep
   }
   return count / 3.0f;
 }
+
 static float handleSensorPlr(const Creature &self, World &world, int currentStep) {
   Compass heading = self.getLastMoveDir();
   auto [lx, ly] = compassToDelta(rotateLeft(heading));
@@ -118,6 +168,7 @@ static float handleSensorPlr(const Creature &self, World &world, int currentStep
   constexpr int maxCount = 3;
   return (rightCount - leftCount + maxCount) / float(2 * maxCount);
 }
+
 static float handleSensorLMx(const Creature &self, const World &world, int currentStep) {
   auto [dx, dy] = compassToDelta(self.getLastMoveDir());
   return (dx + 1) / 2.0f;
@@ -127,8 +178,6 @@ static float handleSensorLMy(const Creature &self, const World &world, int curre
   return (dy + 1) / 2.0f;
 }
 
-// Bug #4: was randomNumberGenerator(0.0f, 0.0f) — always 0.
-// Depends on Bug #1 (float overload now actually returns a float).
 static float handleSensorRnd(const Creature &self, World &world, int currentStep) {
   return randomNumberGenerator(0.0f, 1.0f);
 }
@@ -146,79 +195,50 @@ float computeSensor(Neuron::Type sensorType, const Creature &self, World &world,
   switch (sensorType) {
   case Neuron::Type::Slr:
     return handleSensorSlr(self, world, currentStep);
-    break;
   case Neuron::Type::Sfd:
     return handleSensorSfd(self, world, currentStep);
-    break;
   case Neuron::Type::Sg:
     return handleSensorSg(self, world, currentStep);
-    break;
   case Neuron::Type::Age:
     return handleSensorAge(self, world, currentStep);
-    break;
   case Neuron::Type::Rnd:
     return handleSensorRnd(self, world, currentStep);
-    break;
   case Neuron::Type::Blr:
     return handleSensorBlr(self, world, currentStep);
-    break;
   case Neuron::Type::Osc:
     return handleSensorOsc(self, world, currentStep);
-    break;
   case Neuron::Type::Bfd:
     return handleSensorBfd(self, world, currentStep);
-    break;
   case Neuron::Type::Plr:
     return handleSensorPlr(self, world, currentStep);
-    break;
   case Neuron::Type::Pop:
     return handleSensorPop(self, world, currentStep);
-    break;
   case Neuron::Type::Pfd:
     return handleSensorPfd(self, world, currentStep);
-    break;
   case Neuron::Type::LPf:
     return handleSensorLPf(self, world, currentStep);
-    break;
   case Neuron::Type::LMy:
     return handleSensorLMy(self, world, currentStep);
-    break;
   case Neuron::Type::LMx:
     return handleSensorLMx(self, world, currentStep);
-    break;
   case Neuron::Type::LBf:
     return handleSensorLBf(self, world, currentStep);
-    break;
   case Neuron::Type::BDy:
     return handleSensorBDy(self, world, currentStep);
-    break;
   case Neuron::Type::Gen:
     return handleSensorGen(self, world, currentStep);
-    break;
   case Neuron::Type::BDx:
     return handleSensorBDx(self, world, currentStep);
-    break;
   case Neuron::Type::BD:
     return handleSensorBD(self, world, currentStep);
-    break;
   case Neuron::Type::Lx:
     return handleSensorLx(self, world, currentStep);
-    break;
   case Neuron::Type::Ly:
     return handleSensorLy(self, world, currentStep);
-    break;
   case Neuron::Type::LPD:
-    return handleSensorLPD(self, world, currentStep);
-    break;
   case Neuron::Type::Kill:
-    return handleSensorKill(self, world, currentStep);
-    break;
   case Neuron::Type::OSC:
-    return handleSensorOSC(self, world, currentStep);
-    break;
   case Neuron::Type::Res:
-    return handleSensorRes(self, world, currentStep);
-    break;
   case Neuron::Type::SENSORY:
   case Neuron::Type::INTERNAL:
   case Neuron::Type::ACTION:
@@ -230,7 +250,6 @@ float computeSensor(Neuron::Type sensorType, const Creature &self, World &world,
   case Neuron::Type::Mrv:
   case Neuron::Type::SG:
     return 0.5f;
-    break;
   }
   return 0.5f;
 }

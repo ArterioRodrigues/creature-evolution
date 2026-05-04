@@ -70,6 +70,7 @@ void Game::render() {
 
   _window.clear(sf::Color::White);
   _window.draw(_simulation.getWorld().getSelection());
+  _window.draw(_simulation.getWorld().getGrid());
   for (Creature creature : _simulation.getWorld().getCreatures()) {
     _window.draw(creature);
   }
