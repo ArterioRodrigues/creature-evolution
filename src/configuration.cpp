@@ -23,7 +23,7 @@ Configuration::Configuration() {
 
   steps = 300;
   neurons = 1;
-  population = 500;
+  population = 50;
   genomeLength = 4;
 
   gridWidth = 128;

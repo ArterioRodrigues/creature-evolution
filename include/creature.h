@@ -7,6 +7,7 @@
 class Creature : public sf::Drawable {
 public:
   Creature(int genomeLenght);
+  Creature(const std::string &parentGenome, float mutationRate);
 
   int getX() const;
   int getY() const;
@@ -14,8 +15,11 @@ public:
   void setLocation(int x, int y);
 
   Compass getLastMoveDir() const;
+  Genome getGenome() const;
   void setLastMoveDir(Compass d);
   void stepOnce(World &world, int currentStep);
+  bool isAlive() const;
+  void setAlive(bool a);
 
 private:
   void draw(sf::RenderTarget &target, sf::RenderStates states = sf::RenderStates::Default) const override;

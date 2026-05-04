@@ -3,4 +3,4 @@
 #include "neuron.h"
 #include "world.h"
 
-float computeSensor(Neuron::Type sensorType, const Creature &self, const World &world, int currentStep);
+float computeSensor(Neuron::Type sensorType, const Creature &self, World &world, int currentStep);

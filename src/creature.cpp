@@ -3,7 +3,24 @@
 #include "configuration.h"
 #include "helper.h"
 
+
 Creature::Creature(int genomeLenght) : _genome(genomeLenght), _brain(_genome) {
+  uint8_t red = randomNumberGenerator(0, 255);
+  uint8_t green = randomNumberGenerator(0, 255);
+  uint8_t blue = randomNumberGenerator(0, 255);
+
+  _x = 0;
+  _y = 0;
+
+  _circle.setRadius(2);
+  _circle.setFillColor({red, green, blue});
+
+  _lastMoveDir = Compass(randomNumberGenerator(0, 7));
+  _alive = true;
+}
+
+Creature::Creature(const std::string &parentGenome, float mutationRate)
+    : _genome(parentGenome, mutationRate), _brain(_genome) {
   uint8_t red = randomNumberGenerator(0, 255);
   uint8_t green = randomNumberGenerator(0, 255);
   uint8_t blue = randomNumberGenerator(0, 255);
@@ -23,6 +40,7 @@ void Creature::draw(sf::RenderTarget &target, sf::RenderStates states) const {
   float pixelY = _y * (float(Configuration::windowY) / Configuration::gridHeight);
 
   sf::CircleShape c = _circle;
+  if (!_alive) c.setFillColor(sf::Color(80, 80, 80));
   c.setPosition({pixelX, pixelY});
   target.draw(c, states);
 }
@@ -35,6 +53,8 @@ void Creature::setLocation(int x, int y) {
 int Creature::getX() const { return _x; }
 int Creature::getY() const { return _y; }
 Compass Creature::getLastMoveDir() const { return _lastMoveDir; }
+Genome Creature::getGenome() const { return _genome; }
+
 void Creature::setLastMoveDir(Compass d) { _lastMoveDir = d; }
 void Creature::stepOnce(World &world, int currentStep) {
   if (!_alive) return;
@@ -42,3 +62,6 @@ void Creature::stepOnce(World &world, int currentStep) {
   auto actionLevels = _brain.feedForward(*this, world, currentStep);
   executeActions(*this, world, actionLevels, currentStep);
 }
+
+bool Creature::isAlive() const { return _alive; }
+void Creature::setAlive(bool a) { _alive = a; }

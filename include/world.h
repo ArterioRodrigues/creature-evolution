@@ -8,9 +8,10 @@ public:
   World();
   std::vector<Creature> &getCreatures();
 
+  void repopulate();
   Grid& getGrid();
 
 private:
-  std::vector<Creature> creatures;
+  std::vector<Creature> _creatures;
   Grid _grid; 
 };

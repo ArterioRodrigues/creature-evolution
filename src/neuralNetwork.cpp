@@ -1,4 +1,5 @@
 #include "neuralNetwork.h"
+#include "sensors.h"
 
 NeuralNetwork::NeuralNetwork(Genome genome, int internalNeuronCount) {
   for (auto gen : genome.getGens()) {
@@ -100,13 +101,13 @@ void NeuralNetwork::prune() {
   }
 }
 
-std::unordered_map<Neuron::Type, float> NeuralNetwork::feedForward(const Creature &self, const World &world,
+std::unordered_map<Neuron::Type, float> NeuralNetwork::feedForward(const Creature &self, World &world,
                                                                    int currentStep) {
   // 1. Cache each used sensor exactly once.
   std::unordered_map<int, float> sensorCache;
   for (const auto &c : _connections) {
     if (c.sourceType == Neuron::Type::SENSORY && sensorCache.find(c.sourceId) == sensorCache.end()) {
-      sensorCache[c.sourceId] = computeSensor(c.sourceId, self, world, currentStep);
+      sensorCache[c.sourceId] = computeSensor(static_cast<Neuron::Type>(c.sourceId), self, world, currentStep);
     }
   }
 

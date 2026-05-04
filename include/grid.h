@@ -14,6 +14,8 @@ public:
   int getWidth() const;
   int getHeight() const;
 
+  void clear();
+
 private:
   std::vector<std::vector<int16_t>> _cells;
   int _width;

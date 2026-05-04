@@ -29,3 +29,8 @@ void Grid::move(int fromX, int fromY, int toX, int toY) {
 
 int Grid::getWidth() const { return _width; }
 int Grid::getHeight() const { return _height; }
+
+void Grid::clear() {
+  for (int i = 0; i < _width; i++)
+    for (int j = 0; j < _height; j++) set(i, j, 0);
+}

@@ -36,14 +36,17 @@ add_executable(main
   src/configuration.cpp
   src/game.cpp
   src/main.cpp
+  src/simulation.cpp
   src/creature.cpp
   src/grid.cpp
   src/sensors.cpp
   src/compass.cpp
   src/world.cpp
   src/neuralNetwork.cpp
-  src/simulation.cpp
+  src/selection.cpp
+  src/genome.cpp
   src/actions.cpp
+  src/text.cpp
   src/helper.cpp
 )
 target_include_directories(main PRIVATE 

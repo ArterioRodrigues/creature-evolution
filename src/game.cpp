@@ -1,7 +1,8 @@
 #include "game.h"
-#include "simulation.h"
 #include "configuration.h"
 #include "creature.h"
+#include "simulation.h"
+#include "text.h"
 
 Game::Game() : _window(sf::VideoMode({Configuration::windowX, Configuration::windowY}), "Evolution Simultaion") {
   _x = Configuration::windowX;
@@ -51,9 +52,13 @@ void Game::update(sf::Time deltaTime) {
 }
 
 void Game::render() {
+  Text text(std::to_string(_simulation.getCurrentStep()));
+
   _window.clear(sf::Color::White);
   for (Creature creature : _simulation.getWorld().getCreatures()) {
     _window.draw(creature);
   }
+
+  _window.draw(text);
   _window.display();
 }
