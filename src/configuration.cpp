@@ -26,18 +26,18 @@ Configuration::Configuration() {
   frameRate = 30;
   mutation = 0.005;
 
-  steps = 400;
-  fastFowardCount = 1000;
+  steps = 300;
+  fastFowardCount = 10000;
 
   decayRate = 1;
-  neurons = 50;
-  population = 200;
-  genomeLength = 100;
+  neurons = 4;
+  population = 1000;
+  genomeLength = 32;
 
   gridWidth = 128;
   gridHeight = 128;
 
-  enableKill = false;
+  enableKill = true;
   barrier = BarrierType::None;
-  selection = SelectionType::CenterSquare;
+  selection = SelectionType::CenterCircle;
 }

@@ -27,9 +27,9 @@ void Simulation::endOfGeneration() {
     std::exit(0);
   }
 
- // static std::ofstream log("media/logs/epoch.txt", std::ios::app);
- // log << _currentGeneration << "," << Configuration::population << "," << survivorCount << ","
- //     << float(float(survivorCount) / Configuration::population) << std::endl;
+  static std::ofstream log("media/logs/epoch.txt", std::ios::app);
+  log << _currentGeneration << "," << Configuration::population << "," << survivorCount << ","
+      << float(float(survivorCount) / Configuration::population) << std::endl;
 }
 
 int Simulation::getCurrentGeneration() const { return _currentGeneration; }

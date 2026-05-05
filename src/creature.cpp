@@ -16,7 +16,7 @@ Creature::Creature(int genomeLenght) : _genome(genomeLenght), _brain(_genome) {
   _x = 0;
   _y = 0;
 
-  _circle.setRadius(2);
+  _circle.setRadius(3);
   _circle.setFillColor(colorFromGenome(_genome.toString()));
 
   _lastMoveDir = Compass(randomNumberGenerator(0, 7));
@@ -32,7 +32,7 @@ Creature::Creature(const std::string &parentGenome, float mutationRate)
   _x = 0;
   _y = 0;
 
-  _circle.setRadius(2);
+  _circle.setRadius(3);
   _circle.setFillColor(colorFromGenome(_genome.toString()));
 
   _lastMoveDir = Compass(randomNumberGenerator(0, 7));

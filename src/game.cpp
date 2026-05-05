@@ -72,7 +72,7 @@ void Game::render() {
   _window.draw(_simulation.getWorld().getSelection());
   _window.draw(_simulation.getWorld().getGrid());
   for (Creature creature : _simulation.getWorld().getCreatures()) {
-    _window.draw(creature);
+    if (creature.isAlive()) _window.draw(creature);
   }
 
   _window.draw(gen);
